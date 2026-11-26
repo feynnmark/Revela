@@ -1,0 +1,62 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.14'
+          architecture: x64
+
+      - name: Install build dependencies
+        shell: pwsh
+        run: |
+          python -m venv .venv
+          .\.venv\Scripts\python.exe -m pip install -r requirements-build.txt
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
+          .\.venv\Scripts\python.exe -m pip check
+          if ($LASTEXITCODE -ne 0) { throw 'Incompatible dependencies.' }
+
+      - name: Check public source
+        shell: pwsh
+        run: |
+          .\.venv\Scripts\python.exe tools\audit_public.py --source
+          if ($LASTEXITCODE -ne 0) { throw 'Public source audit failed.' }
+
+      - name: Test and package
+        shell: pwsh
+        run: .\build.ps1 -Test -Package
+
+      - name: Verify packaged codecs
+        shell: pwsh
+        run: |
+          $testDir = Join-Path $env:RUNNER_TEMP 'Revela-codec-test'
+          $testProcess = Start-Process -FilePath '.\dist\Revela\Revela.exe' -ArgumentList @('--self-test', ('"{0}"' -f $testDir)) -WindowStyle Hidden -Wait -PassThru
+          if ($testProcess.ExitCode -ne 0 -or !(Test-Path -LiteralPath (Join-Path $testDir 'resultado.json'))) { throw 'Packaged codec test failed.' }
+
+      - name: Upload Windows package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Revela-Windows-x64
+          path: |
+            dist/Revela-*-Windows-x64.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14

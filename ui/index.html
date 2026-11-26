@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Revela · Conversor de imágenes</title>
+  <link rel="icon" href="assets/mark.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-add" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-photo" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="1.5"/><path d="m3 17 6-5 4 3 3-3 5 5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8Zm0 0v5h5"/></symbol>
+  </defs></svg>
+  <header class="topbar">
+    <div class="brand"><img src="assets/mark.svg" alt="" width="30" height="30"><span>Revela<span class="brand-dot">.</span></span></div>
+    <span class="app-description">Tu imagen, en otro formato.</span>
+    <div class="header-right"><span class="local-label"><span class="local-dot"></span>Todo en tu equipo</span><button class="icon-button" id="help" aria-label="Ayuda y formatos compatibles" title="Ayuda y formatos compatibles"><svg><use href="#i-info"/></svg></button></div>
+  </header>
+  <main class="app">
+    <section class="workspace" aria-labelledby="queue-title">
+      <div class="workspace-heading"><div><h1 id="queue-title">Tus imágenes</h1><p id="queue-description">Una foto o toda una carpeta. Tú eliges.</p></div><div class="add-actions"><button class="button secondary" id="add-folder"><svg><use href="#i-folder"/></svg>Carpeta</button><button class="button primary compact" id="add-files"><svg><use href="#i-add"/></svg>Añadir imágenes</button></div></div>
+      <div class="work-surface" id="drop-zone">
+        <div class="empty" id="empty">
+          <div class="empty-art" aria-hidden="true"><svg viewBox="0 0 108 92"><rect x="8" y="19" width="63" height="59" rx="6" transform="rotate(-12 8 19)"/><rect x="31" y="8" width="64" height="70" rx="6"/><path d="m40 58 14-15 12 10 9-8 12 14"/><circle cx="74" cy="29" r="5"/></svg></div>
+          <h2>Todo empieza con una imagen.</h2><p>Arrastra aquí tus fotos o carpetas<br>y dales un nuevo formato.</p>
+          <button class="button secondary" id="empty-add"><svg><use href="#i-add"/></svg>Elegir imágenes</button>
+          <div class="format-support">RAW <span>·</span> JPG <span>·</span> PNG <span>·</span> HEIC <span>·</span> WebP <span>y más</span></div>
+        </div>
+        <div class="preview" id="preview" hidden>
+          <div class="preview-canvas" id="preview-canvas"><img id="preview-image" alt="Vista previa de la imagen seleccionada" hidden><div class="preview-placeholder" id="preview-placeholder"><svg><use href="#i-photo"/></svg><span id="preview-loading">Preparando vista previa…</span></div><span class="preview-badge" id="preview-badge">Original</span></div>
+          <div class="preview-caption"><span id="preview-name"></span><span id="preview-dimensions"></span></div>
+          <p class="preview-note" id="preview-note"></p>
+        </div>
+        <div class="queue" id="queue" hidden><div class="queue-heading"><span id="queue-count">0 imágenes</span><div><button class="text-button" id="report">Guardar informe</button><button class="text-button" id="clear">Vaciar tanda</button></div></div><div class="file-list" id="file-list" role="list" aria-label="Imágenes de la tanda"></div><button class="text-button show-more" id="show-more" hidden>Mostrar más imágenes</button></div>
+        <div class="drop-overlay" id="drop-overlay" hidden><svg><use href="#i-add"/></svg><span>Suelta tus imágenes aquí</span></div>
+      </div>
+      <div class="workspace-footer"><svg><use href="#i-shield"/></svg><span>Los originales se quedan tal como están.</span><span class="shortcut-hint">Ctrl + O para añadir</span></div>
+    </section>
+    <aside class="settings" aria-labelledby="settings-title">
+      <div class="settings-controls"><h2 id="settings-title">Exportar como</h2>
+      <fieldset class="format-picker" aria-label="Formato de salida"><label><input type="radio" name="format" value="jpg" checked><span>JPG</span></label><label><input type="radio" name="format" value="webp"><span>WebP</span></label><label><input type="radio" name="format" value="png"><span>PNG</span></label><label><input type="radio" name="format" value="tiff"><span>TIFF</span></label></fieldset>
+      <p class="format-note" id="format-note">El clásico para tus fotografías.</p>
+      <div class="settings-section quality-section" id="quality-section"><div class="setting-label"><label for="quality">Calidad</label><output id="quality-value" for="quality">92<span>%</span></output></div><input id="quality" type="range" min="1" max="100" value="92"><div class="range-labels"><span>Menor peso</span><span>Más detalle</span></div></div>
+      <label class="check-row lossless-row" id="lossless-row" hidden><span>WebP sin pérdida</span><input id="lossless" type="checkbox"></label>
+      <div class="settings-section"><label class="setting-label" for="max-size">Tamaño de la imagen</label><select id="max-size"><option value="0">Conservar tamaño original</option><option value="3840">Lado mayor · 3840 px</option><option value="2560">Lado mayor · 2560 px</option><option value="1920">Lado mayor · 1920 px</option><option value="1280">Lado mayor · 1280 px</option><option value="custom">Tamaño personalizado…</option></select><div class="custom-size" id="custom-size-row" hidden><input type="number" id="custom-size" min="1" max="65535" value="2048" aria-label="Lado mayor en píxeles"><span>px en el lado mayor</span></div><p class="field-note">Conserva las proporciones. Nunca amplía.</p></div>
+      <div class="settings-section metadata-section"><label class="check-row"><span>Conservar metadatos</span><input id="metadata" type="checkbox" checked></label><p class="field-note">EXIF disponible en imágenes comunes.<br>En RAW se exporta solo la imagen.</p></div>
+      <div class="settings-section destination-section"><div class="setting-label"><span>Guardar en</span><button class="text-button" id="change-destination">Cambiar</button></div><button class="destination" id="destination"><svg><use href="#i-folder"/></svg><span id="destination-label">Carpeta junto al original</span></button><p class="field-note" id="destination-note">Se creará una carpeta «Revela».</p><button class="text-button reset-destination" id="reset-destination" hidden>Usar carpeta junto al original</button></div>
+      </div><button class="text-button more-settings" id="more-settings" hidden>Ver más ajustes <svg><use href="#i-arrow"/></svg></button><div class="convert-area"><div class="status-line"><span id="status-label">Lista para convertir</span><span id="progress-count"></span></div><div class="progress-track" role="progressbar" aria-label="Progreso de la tanda" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="progress-fill"></div></div><button class="button primary convert-button" id="convert" disabled><span id="convert-label">Convertir imágenes</span><svg><use href="#i-arrow"/></svg></button><button class="button secondary output-button" id="open-output" hidden><svg><use href="#i-folder"/></svg>Abrir resultados</button><p class="convert-hint" id="convert-hint">Añade imágenes para comenzar.</p></div>
+    </aside>
+  </main>
+  <footer class="bottom-bar"><span id="status-message" role="status" aria-live="polite">Todo listo para tu próxima tanda.</span><span id="app-version">Revela</span></footer>
+  <div class="toast" id="toast" role="alert" hidden></div>
+  <dialog id="help-dialog"><div class="dialog-heading"><h2>Una conversión sencilla.</h2><button class="icon-button" id="close-help" aria-label="Cerrar ayuda"><svg><use href="#i-close"/></svg></button></div><p>Elige tus imágenes, un formato de salida y pulsa <strong>Convertir</strong>. Puedes arrastrar carpetas completas; se incluyen sus subcarpetas.</p><h3>Formatos de entrada</h3><p>RAW: CR2, CR3, NEF, ARW, RAF, DNG, ORF, RW2, PEF y otros formatos admitidos por LibRaw. La compatibilidad depende del modelo de cámara y del archivo.</p><p>Imágenes: JPG, PNG, WebP, TIFF, BMP, GIF, AVIF, HEIC, HEIF e ICO.</p><h3>Detalles que conviene saber</h3><ul><li>Los RAW se revelan con balance de blancos de cámara y color sRGB. El acabado puede variar respecto a la vista previa de la cámara.</li><li>Las salidas tienen 8 bits por canal, incluido TIFF. Esta app no sustituye un editor de revelado.</li><li>GIF animado, WebP animado, TIFF e ICO con varias imágenes: se exporta solo el primer fotograma o página.</li><li>JPG sustituye las áreas transparentes por blanco. PNG y WebP conservan transparencia.</li><li>EXIF puede incluir ubicación GPS. Desmarca «Conservar metadatos» para quitarlo. El perfil de color sRGB se conserva.</li><li>Si un nombre ya existe, se añade un número. Las fotos originales siempre se conservan.</li><li>Detener cancela los archivos pendientes; el proceso actual puede tardar unos segundos en terminar.</li></ul><div class="help-footer"><span>Sin cuenta. Sin subir tus fotos.</span><span>Ctrl + O · Añadir &nbsp; / &nbsp; Ctrl + Enter · Convertir</span></div></dialog>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import argparse
 import io
 import json
 import marshal
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -41,19 +42,26 @@ class Audit:
     def __init__(self):
         self.findings = set()
         self.count = 0
+        profile = Path.home()
+        public_runner = (
+            os.environ.get('GITHUB_ACTIONS') == 'true'
+            and os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted'
+            and profile.name.lower().encode('utf-8') in PUBLIC_BUILD_USERS
+        )
+        self._private_profile = b'' if public_runner else str(profile).encode('utf-8').lower()
 
     def fail(self, name: str, rule: str) -> None:
         self.findings.add((name, rule))
 
     def inspect(self, name: str, raw: bytes) -> None:
         self.count += 1
-        profile = str(Path.home()).encode('utf-8').lower()
+        profile = self._private_profile
         for data in (raw, raw.replace(b'\x00', b'')):
             for rule, pattern in COMPILED_RULES.items():
                 if pattern.search(data):
                     self.fail(name, rule)
             normalized = data.replace(b'\\\\', b'\\')
-            if profile in normalized.lower() or profile.replace(b'\\', b'/') in normalized.lower():
+            if profile and (profile in normalized.lower() or profile.replace(b'\\', b'/') in normalized.lower()):
                 self.fail(name, 'local-profile-path')
             for match in USER_PATH.finditer(normalized):
                 if match.group(1).lower() not in PUBLIC_BUILD_USERS and name not in UPSTREAM_PATH_CONTEXTS:
